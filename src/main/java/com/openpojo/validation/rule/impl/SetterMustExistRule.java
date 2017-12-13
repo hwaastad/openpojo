@@ -15,9 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.openpojo.validation.rule.impl;
-
 
 import com.openpojo.reflection.PojoClass;
 import com.openpojo.reflection.PojoField;
@@ -30,13 +28,15 @@ import com.openpojo.validation.rule.Rule;
  *
  * @author oshoukry
  */
-public class SetterMustExistRule implements Rule {
+public class SetterMustExistRule extends BaseRule<SetterMustExistRule> implements Rule {
 
-  public void evaluate(final PojoClass pojoClass) {
-    for (PojoField fieldEntry : pojoClass.getPojoFields()) {
-      if (!fieldEntry.isFinal() && !fieldEntry.hasSetter()) {
-        Affirm.fail(String.format("[%s] is missing a setter", fieldEntry));
+   public void evaluate(final PojoClass pojoClass) {
+      for(PojoField fieldEntry : pojoClass.getPojoFields()){
+         if(!skippedFields.contains(fieldEntry.getName())){
+            if(!fieldEntry.isFinal() && !fieldEntry.hasSetter()){
+               Affirm.fail(String.format("[%s] is missing a setter", fieldEntry));
+            }
+         }
       }
-    }
-  }
+   }
 }

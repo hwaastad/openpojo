@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.openpojo.validation.rule.impl;
 
 import com.openpojo.reflection.PojoClass;
@@ -30,13 +29,18 @@ import com.openpojo.validation.utils.ValidationHelper;
  *
  * @author oshoukry
  */
-public class GetterMustExistRule implements Rule {
+public class GetterMustExistRule extends BaseRule<GetterMustExistRule> implements Rule {
 
-  public void evaluate(final PojoClass pojoClass) {
-    for (PojoField fieldEntry : pojoClass.getPojoFields()) {
-      if (!ValidationHelper.isStaticFinal(fieldEntry) && !fieldEntry.hasGetter() && !fieldEntry.isSynthetic()) {
-        Affirm.fail(String.format("[%s] is missing a getter", fieldEntry));
+   public void evaluate(final PojoClass pojoClass) {
+      for(PojoField fieldEntry : pojoClass.getPojoFields()){
+         if(!skippedFields.contains(fieldEntry.getName())){
+            if(!ValidationHelper.isStaticFinal(fieldEntry) && !fieldEntry.hasGetter() && !fieldEntry.isSynthetic()){
+               Affirm.fail(String.format("[%s] is missing a getter", fieldEntry));
+            }
+         }
       }
-    }
-  }
+//      pojoClass.getPojoFields().stream().filter(prdct -> !skippedFields.contains(prdct.getName())).filter((prdct) -> ValidationHelper.isStaticFinal(prdct) && !prdct.isFinal() && !prdct.isSynthetic()).forEach(cnsmr -> {
+//         Affirm.fail(String.format("[%s] is missing a getter", cnsmr));
+//      });
+   }
 }

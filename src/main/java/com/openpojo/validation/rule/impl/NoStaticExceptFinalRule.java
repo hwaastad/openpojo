@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.openpojo.validation.rule.impl;
 
 import com.openpojo.reflection.PojoClass;
@@ -25,19 +24,25 @@ import com.openpojo.validation.rule.Rule;
 
 /**
  * This rule ensures that there are no static fields unless they are final.
- * Another best practice, using static fields for memory sharing and allowing read/write
- * should be very tightly controlled, and generally don't belong in POJOs or other similar
- * class of data repositories.
+ * Another best practice, using static fields for memory sharing and allowing
+ * read/write should be very tightly controlled, and generally don't belong in
+ * POJOs or other similar class of data repositories.
  *
  * @author oshoukry
  */
-public class NoStaticExceptFinalRule implements Rule {
+public class NoStaticExceptFinalRule extends BaseRule<NoStaticExceptFinalRule> implements Rule {
 
-  public void evaluate(final PojoClass pojoClass) {
-    for (PojoField fieldEntry : pojoClass.getPojoFields()) {
-      if (fieldEntry.isStatic() && !fieldEntry.isFinal()) {
-        Affirm.fail(String.format("Static fields=[%s] not marked final are not allowed", fieldEntry));
+   public void evaluate(final PojoClass pojoClass) {
+      for(PojoField fieldEntry : pojoClass.getPojoFields()){
+         if(!skippedFields.contains(fieldEntry.getName())){
+            if(fieldEntry.isStatic() && !fieldEntry.isFinal()){
+               Affirm.fail(String.format("Static fields=[%s] not marked final are not allowed", fieldEntry));
+            }
+         }
       }
-    }
-  }
+      
+//      pojoClass.getPojoFields().stream().filter((fieldEntry) -> !(this.skippedFields.contains(fieldEntry.getName()))).filter((fieldEntry) -> (fieldEntry.isStatic() && !fieldEntry.isFinal())).forEachOrdered((fieldEntry) -> {
+//         Affirm.fail(String.format("Static fields=[%s] not marked final are not allowed", fieldEntry));
+//      });
+   }
 }
